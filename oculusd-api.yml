@@ -67,6 +67,46 @@ paths:
               $ref: '#/components/examples/StandardResponseSchemaExample'
             RootAccountRegisterSuccessResponse:
               $ref: '#/components/examples/RootAccountRegisterSuccessResponseSchemaExample'
+            StandardErrorResponseSchemaExample:
+              $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+
+  /activate/root-account/{emailAddress}/{activationToken}:
+    parameters:
+      - in: path
+        name: emailAddress
+        schema:
+          type: "string"
+        required: true
+        description: Valid e-mail address for the new root account. This is the email address you used during the registration call
+      - in: path
+        name: activationToken
+        schema:
+          type: "string"
+        required: true
+        description: the token you received in your e-mail
+    post:
+      summary: Activate a PENDING root account for the provided e-mail address and activation token
+      description: Because placing password or passsphrase strings in query arameters is a bad idea, supply it rather in the POST body. After a succesful activation, you should receive another email confirming the activation
+      requestBody:
+        description: Supply the same passphrase you used during registration.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RootAccountActivationSchema'
+      responses:
+          '201':
+            description: Response body
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: '#/components/responses/StandardResultResponse'
+            examples: 
+              RootAccountActivationSuccessResponseSchemaExample:
+                $ref: '#/components/examples/RootAccountActivationSuccessResponseSchemaExample'
+              StandardErrorResponseSchemaExample:
+                $ref: '#/components/examples/StandardErrorResponseSchemaExample'
 
 components:
   responses:
@@ -156,14 +196,28 @@ components:
             RootAccountStatus:
               type: "string"
               description: At this stage, this value should always be PENDING
-          
+
+    RootAccountActivationSchema:
+      type: object
+      properties:
+        Passphrase:
+          type: "string"
+          description: Use the passphrase you have registered with to confirm the activation
+
   examples:
     StandardResponseSchemaExample:
       IsError: false
       ErrorMessage: null
       TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: Some message
+      Message: null
       Data: Some data
+
+    StandardErrorResponseSchemaExample:
+      IsError: true
+      ErrorMessage: An example error message
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: null
+      Data: null
       
     RootAccountRegisterSuccessResponseSchemaExample:
       IsError: false
@@ -173,3 +227,10 @@ components:
       Data:
         RootAccountId: raxxxxxxx
         RootAccountStatus: PENDING
+
+    RootAccountActivationSuccessResponseSchemaExample:
+      IsError: false
+      ErrorMessage: null
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: Some message
+      Data: Activated root account "raxxxxxx"

@@ -35,6 +35,7 @@ paths:
                 $ref: '#/components/responses/PingResponse'
               example: 
                 Ping: "ok"
+  
   /register/root-account/{emailAddress}:
     parameters:
       - in: path
@@ -107,6 +108,67 @@ paths:
                 $ref: '#/components/examples/RootAccountActivationSuccessResponseSchemaExample'
               StandardErrorResponseSchemaExample:
                 $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+
+  /account/root-account/{rootAccountId}/authenticate:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+    post:
+      summary: Authenticate a root account
+      description: Certain API calls require an authenticated root account token. This function allow you to authenticate your root account and will return a token on succesfull authentication.
+      requestBody:
+        description: Supply the same passphrase you used during registration.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RootAccountAuthenticationSchema'
+      responses:
+          '201':
+            description: Response body
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: '#/components/responses/StandardResultResponse'
+            examples: 
+              RootAccountAuthenticateSuccessResponseSchemaExample:
+                $ref: '#/components/examples/RootAccountAuthenticateSuccessResponseSchemaExample'
+              StandardErrorResponseSchemaExample:
+                $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+
+  /account/root-account/{rootAccountId}/logout/{authToken}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+      - in: path
+        name: authToken
+        schema:
+          type: "string"
+        required: true
+        description: Token from a succesfull root account authentication attempt
+    get:
+      summary: No additional parameters is required and if the supplied token is still valid, the account will be logged out
+      description: This function is intended to force a cancelation of a valid authentication token - effectively logging out. The exact same response will always be returned, regardless if the token was valid or not or if the account was found or not etc.
+      responses:
+        '201':
+          description: Response body
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/responses/StandardResultResponse'
+          examples: 
+              RootAccountAuthenticateSuccessResponseSchemaExample:
+                $ref: '#/components/examples/AccountLogoutResponseExample'
+
 
 components:
   responses:
@@ -204,6 +266,19 @@ components:
           type: "string"
           description: Use the passphrase you have registered with to confirm the activation
 
+    RootAccountAuthenticationSchema:
+      type: object
+      properties:
+        Passphrase:
+          type: "string"
+          description: Use the passphrase you have registered with to confirm the activation
+          required: true
+        TokenTTL:
+          type: "integer"
+          desciption: The desired time to live for te token. For root accounts this is a maximum of 24 hours or 86400 seconds.
+          required: false
+          default: 86400
+
   examples:
     StandardResponseSchemaExample:
       IsError: false
@@ -234,3 +309,17 @@ components:
       TraceId: xxxx-xxxx-xxxx-xxxx
       Message: Some message
       Data: Activated root account "raxxxxxx"
+
+    RootAccountAuthenticateSuccessResponseSchemaExample:
+      IsError: false
+      ErrorMessage: null
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: "Authentication successful. Session expires (UTC): 1234567890"
+      Data: A JWT token...
+
+    AccountLogoutResponseExample:
+      IsError: false
+      ErrorMessage: null
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: The logout request was completed succesfully. If your session was found to be active, it is now canceled.
+      Data: null

@@ -3,6 +3,14 @@
 The OpenAPI definition files for OculusD.com, Inc API based on
 [OpenAPI version 3](https://swagger.io/docs/specification/basic-structure/).
 
+## Status
+
+This documentation is still in very active development and the actual API end-points may not exist yet or themselves
+very unstable as development is being done.
+
+Please watch out for important announcements [on our blog](https://www.oculusd.com/blog) or subscribe to notifications
+on this repository by [adding a watch](https://help.github.com/articles/watching-and-unwatching-repositories/).
+
 ## Using the Swagger UI
 
 The `oculusd-api.yml` file is the main file and also the one we use to edit in the Swagger Editor. From the editor, the

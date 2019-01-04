@@ -35,6 +35,8 @@ paths:
                 $ref: '#/components/responses/PingResponse'
               example: 
                 Ping: "ok"
+        '404':
+          description: As long as the function is unimplemented, you should receive an error 404
   
   /register/root-account/{emailAddress}:
     parameters:
@@ -70,6 +72,8 @@ paths:
               $ref: '#/components/examples/RootAccountRegisterSuccessResponseSchemaExample'
             StandardErrorResponseSchemaExample:
               $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
 
   /activate/root-account/{emailAddress}/{activationToken}:
     parameters:
@@ -108,6 +112,8 @@ paths:
                 $ref: '#/components/examples/RootAccountActivationSuccessResponseSchemaExample'
               StandardErrorResponseSchemaExample:
                 $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
 
   /account/root-account/{rootAccountId}/authenticate:
     parameters:
@@ -140,8 +146,10 @@ paths:
                 $ref: '#/components/examples/RootAccountAuthenticateSuccessResponseSchemaExample'
               StandardErrorResponseSchemaExample:
                 $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
 
-  /account/root-account/{rootAccountId}/logout/{authToken}:
+  /account/root-account/{rootAccountId}/logout:
     parameters:
       - in: path
         name: rootAccountId
@@ -149,15 +157,11 @@ paths:
           type: "string"
         required: true
         description: Your root account
-      - in: path
-        name: authToken
-        schema:
-          type: "string"
-        required: true
-        description: Token from a succesfull root account authentication attempt
     get:
       summary: No additional parameters is required and if the supplied token is still valid, the account will be logged out
       description: This function is intended to force a cancelation of a valid authentication token - effectively logging out. The exact same response will always be returned, regardless if the token was valid or not or if the account was found or not etc.
+      security:
+        - bearerAuth: []
       responses:
         '201':
           description: Response body
@@ -168,12 +172,16 @@ paths:
           examples: 
               RootAccountAuthenticateSuccessResponseSchemaExample:
                 $ref: '#/components/examples/AccountLogoutResponseExample'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse' 
 
 
 components:
   responses:
+    NotFoundResponse:
+      description: If you run into this response, that the function has not yet been implemented for the choosen end-point or region
     PingResponse:
-      description: The specified resource was not found
+      description: A standard ping response
       content:
         application/json:
           schema:
@@ -323,3 +331,10 @@ components:
       TraceId: xxxx-xxxx-xxxx-xxxx
       Message: The logout request was completed succesfully. If your session was found to be active, it is now canceled.
       Data: null
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+      description: You will receive a JWT token when authenticating (for now, calling '/account/root-account/{rootAccountId}/authenticate')

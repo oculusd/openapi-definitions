@@ -26,6 +26,7 @@ First, clone this repository and change into the `openapi-definitions` directory
 Running the docker container and displaying the API documentation:
 
     $ docker pull swaggerapi/swagger-ui
+    $ docker run -p 127.0.0.1:83:8080 swaggerapi/swagger-ui
 
 Open a web browser [and point to 127.0.0.1:83/](http://127.0.0.1:83/).
 

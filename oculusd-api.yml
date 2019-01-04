@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: OculusD.com, Inc IoT Thing/Sensor API
+  description: Please refer to [the online documentation](https://www.oculusd.com/) for more detailed explination of the service
+  version: "2.0"
+
+servers:
+  - url: https://data-{region}.oculusd.com/v2
+    description: The IoT/IIoT thing/sensor API endpoints base path, version 2
+    variables:
+      region:
+        default: us1
+        description: US Based endpoints (data is stored in North Virginia)
+  - url: http://{host}{port}{path}
+    description: A simple locat test server, for those implementing a local integration simulator. The example deonstrates a typical Python Flask development server
+    variables:
+      host:
+        default: "127.0.0.1"
+      port:
+        default: ":5000"
+      path:
+        default: /
+
+paths:
+  /ping:
+    get:
+      summary: Returns a general response
+      description: This function is intended for checking service availability and response time. This is a public endpoint that does not require any authorisation. 
+      responses:
+        '201':
+          description: Response body
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/responses/PingResponse'
+              example: 
+                Ping: "ok"
+  /register/root-account/{emailAddress}:
+    parameters:
+      - in: path
+        name: emailAddress
+        schema:
+          type: "string"
+        required: true
+        description: Valid e-mail address for the new root account. Each root account can only have one e-mail address linked to it ever.
+    post:
+      summary: Registers a new root account for the provided e-mail address
+      description: A root account is the primary account from where a organisation or even hobby maker can start to define things, sensors, users etc.
+      requestBody:
+        description: Additional information required for root account registration. By registering, you accept the terms and conditions as described at [https://www.oculusd.com/](https://www.oculusd.com/)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RootAccountRegistrationSchema'
+      responses:
+        '201':
+          description: Response body
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/responses/RootAccountRegisterSuccessResponse'
+                  - $ref: '#/components/responses/StandardResultResponse'
+          examples: 
+            StandardResponseSchemaExample:
+              $ref: '#/components/examples/StandardResponseSchemaExample'
+            RootAccountRegisterSuccessResponse:
+              $ref: '#/components/examples/RootAccountRegisterSuccessResponseSchemaExample'
+
+components:
+  responses:
+    PingResponse:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PingSchema'
+    StandardResultResponse:
+      description: A standard response response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardResponseSchema'
+    RootAccountRegisterSuccessResponse:
+      description: A root account registration successresponse response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RootAccountRegisterSuccessResponseSchema'
+  
+  schemas:
+    PingSchema:
+      type: object
+      properties: 
+        Ping: 
+          type: "string"
+          description: A ping message from the server.
+
+    RootAccountRegistrationSchema:
+      type: object
+      properties:
+        AccountName:
+          type: "string"
+          description: A user defined name for the account - free form text, min 3 characters and max 255 characters in the ASCII range 32 to 126 (decimal)
+        PassPhrase:
+          type: "string"
+          description: A user defined passphrase, min 20 characters and max 1024 characters in the ASCII range 32 to 126 (decimal)
+
+    StandardResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "string"
+          description: Data generated by the response
+          default: null
+
+    RootAccountRegisterSuccessResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "object"
+          description: Data generated by the response
+          properties:
+            RootAccountId:
+              type: "string"
+              description: The generated root account ID
+            RootAccountStatus:
+              type: "string"
+              description: At this stage, this value should always be PENDING
+          
+  examples:
+    StandardResponseSchemaExample:
+      IsError: false
+      ErrorMessage: null
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: Some message
+      Data: Some data
+      
+    RootAccountRegisterSuccessResponseSchemaExample:
+      IsError: false
+      ErrorMessage: null
+      TraceId: xxxx-xxxx-xxxx-xxxx
+      Message: Some message
+      Data:
+        RootAccountId: raxxxxxxx
+        RootAccountStatus: PENDING

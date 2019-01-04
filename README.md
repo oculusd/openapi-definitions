@@ -24,3 +24,7 @@ First, clone this repository and change into the `openapi-definitions` directory
 Commands:
 
     $ docker pull swaggerapi/swagger-ui
+
+Open a web browser [and point to 127.0.0.1:83/](http://127.0.0.1:83/).
+
+When the Swagger UI is open, point to the YAML location [https://raw.githubusercontent.com/oculusd/openapi-definitions/master/oculusd-api.yml](https://raw.githubusercontent.com/oculusd/openapi-definitions/master/oculusd-api.yml)

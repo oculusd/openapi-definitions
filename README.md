@@ -23,7 +23,7 @@ First, clone this repository and change into the `openapi-definitions` directory
     $ git clone https://github.com/oculusd/openapi-definitions.git
     $ cd openapi-definitions/
 
-Commands:
+Running the docker container and displaying the API documentation:
 
     $ docker pull swaggerapi/swagger-ui
 

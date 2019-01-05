@@ -60,9 +60,6 @@ paths:
           $ref: '#/components/responses/GenericErrorResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
-        'default':
-          $ref: '#/components/responses/RootAccountRegisterSuccessResponse'
-
 
   /activate/root-account/{emailAddress}/{activationToken}:
     parameters:

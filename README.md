@@ -31,3 +31,15 @@ Running the docker container and displaying the API documentation:
 Open a web browser [and point to 127.0.0.1:83/](http://127.0.0.1:83/).
 
 When the Swagger UI is open, point to the YAML location [https://raw.githubusercontent.com/oculusd/openapi-definitions/master/oculusd-api.yml](https://raw.githubusercontent.com/oculusd/openapi-definitions/master/oculusd-api.yml)
+
+## Useful Hacks
+
+### YML to JSON using Python
+
+You can run the following:
+
+    $ cat oculusd-api.yml | python3 -c 'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print json.dumps(y)'
+
+Or to create a file:
+
+    $ cat oculusd-api.yml | python3 -c 'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print json.dumps(y)' > oculusd-api.json

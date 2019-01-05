@@ -9,8 +9,11 @@ servers:
     description: The IoT/IIoT thing/sensor API endpoints base path, version 2
     variables:
       region:
+        enum:
+          - us1
+          - eu1
         default: us1
-        description: US Based endpoints (data is stored in North Virginia)
+        description: Regional endpoints (data can be stored in USA, North Virginia or The Netherlands)
   - url: http://{host}{port}{path}
     description: A simple locat test server, for those implementing a local integration simulator. The example deonstrates a typical Python Flask development server
     variables:
@@ -28,13 +31,7 @@ paths:
       description: This function is intended for checking service availability and response time. This is a public endpoint that does not require any authorisation. 
       responses:
         '201':
-          description: Response body
-          content:
-            application/json:
-              schema: 
-                $ref: '#/components/responses/PingResponse'
-              example: 
-                Ping: "ok"
+          $ref: '#/components/responses/PingResponse'
         '404':
           description: As long as the function is unimplemented, you should receive an error 404
   
@@ -58,22 +55,14 @@ paths:
               $ref: '#/components/schemas/RootAccountRegistrationSchema'
       responses:
         '201':
-          description: Response body
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/responses/RootAccountRegisterSuccessResponse'
-                  - $ref: '#/components/responses/StandardResultResponse'
-          examples: 
-            StandardResponseSchemaExample:
-              $ref: '#/components/examples/StandardResponseSchemaExample'
-            RootAccountRegisterSuccessResponse:
-              $ref: '#/components/examples/RootAccountRegisterSuccessResponseSchemaExample'
-            StandardErrorResponseSchemaExample:
-              $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+          $ref: '#/components/responses/RootAccountRegisterSuccessResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
+        'default':
+          $ref: '#/components/responses/RootAccountRegisterSuccessResponse'
+
 
   /activate/root-account/{emailAddress}/{activationToken}:
     parameters:
@@ -101,17 +90,9 @@ paths:
               $ref: '#/components/schemas/RootAccountActivationSchema'
       responses:
           '201':
-            description: Response body
-            content:
-              application/json:
-                schema:
-                  oneOf:
-                    - $ref: '#/components/responses/StandardResultResponse'
-            examples: 
-              RootAccountActivationSuccessResponseSchemaExample:
-                $ref: '#/components/examples/RootAccountActivationSuccessResponseSchemaExample'
-              StandardErrorResponseSchemaExample:
-                $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+            $ref: '#/components/responses/StandardResultResponse'
+          '520':
+            $ref: '#/components/responses/GenericErrorResponse'
           '404':
             $ref: '#/components/responses/NotFoundResponse'
 
@@ -135,17 +116,9 @@ paths:
               $ref: '#/components/schemas/RootAccountAuthenticationSchema'
       responses:
           '201':
-            description: Response body
-            content:
-              application/json:
-                schema:
-                  oneOf:
-                    - $ref: '#/components/responses/StandardResultResponse'
-            examples: 
-              RootAccountAuthenticateSuccessResponseSchemaExample:
-                $ref: '#/components/examples/RootAccountAuthenticateSuccessResponseSchemaExample'
-              StandardErrorResponseSchemaExample:
-                $ref: '#/components/examples/StandardErrorResponseSchemaExample'
+            $ref: '#/components/responses/StandardResultResponse'
+          '520':
+            $ref: '#/components/responses/GenericErrorResponse'
           '404':
             $ref: '#/components/responses/NotFoundResponse'
 
@@ -164,48 +137,63 @@ paths:
         - bearerAuth: []
       responses:
         '201':
-          description: Response body
-          content:
-            application/json:
-              schema: 
-                $ref: '#/components/responses/StandardResultResponse'
-          examples: 
-              RootAccountAuthenticateSuccessResponseSchemaExample:
-                $ref: '#/components/examples/AccountLogoutResponseExample'
+          $ref: '#/components/responses/LogoutResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse' 
 
 
 components:
+
   responses:
+
     NotFoundResponse:
       description: If you run into this response, that the function has not yet been implemented for the choosen end-point or region
+
     PingResponse:
       description: A standard ping response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PingSchema'
+
     StandardResultResponse:
       description: A standard response response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/StandardResponseSchema'
+
     RootAccountRegisterSuccessResponse:
       description: A root account registration successresponse response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/RootAccountRegisterSuccessResponseSchema'
+
+    GenericErrorResponse:
+      description: All error messages will have a similar structure to the following. Use the trace ID for logging support requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorResponseSchema'
+
+    LogoutResponse:
+      description: The response generated by a logout request - regardless of the actual logout result
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LogoutResponseSchema'
   
   schemas:
+
     PingSchema:
       type: object
       properties: 
         Ping: 
           type: "string"
           description: A ping message from the server.
+      example: 
+        Ping: ok
 
     RootAccountRegistrationSchema:
       type: object
@@ -216,6 +204,12 @@ components:
         PassPhrase:
           type: "string"
           description: A user defined passphrase, min 20 characters and max 1024 characters in the ASCII range 32 to 126 (decimal)
+      required:
+        - AccountName
+        - PassPhrase
+      example:
+        AccountName: My Company Name
+        PassPhrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
 
     StandardResponseSchema:
       type: object
@@ -238,6 +232,80 @@ components:
           type: "string"
           description: Data generated by the response
           default: null
+      required:
+        - IsError
+        - ErrorMessage
+        - TraceId
+        - Message
+        - Data
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: aaaa-bbbb-cccc-dddd
+        Message: Response message giving more information or guidance
+        Data: Data that could be in the form of just a string or a more complex data structure. This example illustrates data as a normal string.
+
+    LogoutResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "string"
+          description: Data generated by the response
+          default: null
+      required:
+        - IsError
+        - ErrorMessage
+        - TraceId
+        - Message
+        - Data
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: aaaa-bbbb-cccc-dddd
+        Message: null
+        Data: The logout request was processed
+
+    GenericErrorResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "string"
+          description: Data generated by the response
+          default: null
+      example:
+        IsError: true
+        ErrorMessage: An error message explaining what went wrong
+        TraceId: aaaa-bbbb-cccc-dddd
+        Message: null
+        Data: null
 
     RootAccountRegisterSuccessResponseSchema:
       type: object
@@ -266,6 +334,14 @@ components:
             RootAccountStatus:
               type: "string"
               description: At this stage, this value should always be PENDING
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: xxxx-xxxx-xxxx-xxxx
+        Message: Some message
+        Data:
+          RootAccountId: raxxxxxxx
+          RootAccountStatus: PENDING
 
     RootAccountActivationSchema:
       type: object
@@ -273,6 +349,8 @@ components:
         Passphrase:
           type: "string"
           description: Use the passphrase you have registered with to confirm the activation
+      example:
+        Passphrase: abc
 
     RootAccountAuthenticationSchema:
       type: object
@@ -280,57 +358,14 @@ components:
         Passphrase:
           type: "string"
           description: Use the passphrase you have registered with to confirm the activation
-          required: true
         TokenTTL:
           type: "integer"
-          desciption: The desired time to live for te token. For root accounts this is a maximum of 24 hours or 86400 seconds.
-          required: false
-          default: 86400
-
-  examples:
-    StandardResponseSchemaExample:
-      IsError: false
-      ErrorMessage: null
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: null
-      Data: Some data
-
-    StandardErrorResponseSchemaExample:
-      IsError: true
-      ErrorMessage: An example error message
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: null
-      Data: null
-      
-    RootAccountRegisterSuccessResponseSchemaExample:
-      IsError: false
-      ErrorMessage: null
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: Some message
-      Data:
-        RootAccountId: raxxxxxxx
-        RootAccountStatus: PENDING
-
-    RootAccountActivationSuccessResponseSchemaExample:
-      IsError: false
-      ErrorMessage: null
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: Some message
-      Data: Activated root account "raxxxxxx"
-
-    RootAccountAuthenticateSuccessResponseSchemaExample:
-      IsError: false
-      ErrorMessage: null
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: "Authentication successful. Session expires (UTC): 1234567890"
-      Data: A JWT token...
-
-    AccountLogoutResponseExample:
-      IsError: false
-      ErrorMessage: null
-      TraceId: xxxx-xxxx-xxxx-xxxx
-      Message: The logout request was completed succesfully. If your session was found to be active, it is now canceled.
-      Data: null
+          description: The desired time to live for te token. For root accounts this is a maximum of 24 hours or 86400 seconds.
+      required:
+        - Passphrase
+      example:
+        Passphrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
+        TokenTTL: 600
 
   securitySchemes:
     bearerAuth:

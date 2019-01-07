@@ -69,14 +69,14 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
-  /activate/root-account/{emailAddress}/{activationToken}:
+  /activate/root-account/{rootAccountId}/{activationToken}:
     parameters:
       - in: path
-        name: emailAddress
+        name: rootAccountId
         schema:
           type: "string"
         required: true
-        description: Valid e-mail address for the new root account. This is the email address you used during the registration call
+        description: Account ID as returned from the registration request
       - in: path
         name: activationToken
         schema:
@@ -84,7 +84,7 @@ paths:
         required: true
         description: the token you received in your e-mail
     post:
-      summary: Activate a PENDING root account for the provided e-mail address and activation token
+      summary: Activate a PENDING root account
       description: Because placing password or passsphrase strings in query arameters is a bad idea, supply it rather in the POST body. After a succesful activation, you should receive another email confirming the activation
       requestBody:
         description: Supply the same passphrase you used during registration.
@@ -92,7 +92,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RootAccountActivationSchema'
+              $ref: '#/components/schemas/AccountActivationSchema'
       responses:
           '201':
             $ref: '#/components/responses/StandardResultResponse'
@@ -247,9 +247,7 @@ paths:
         description: Valid e-mail address for the new user account. The same e-mail address cannot be registered multiple times for a single root account. The email address used for the root account cannot also be used as a user account for the same root account.
     post:
       summary: Registers a new user account for the provided e-mail address
-      description: A user account provides the ability for organisations to organise users with thing groups. Users belonging to thing groups can perform various actions - by default the user will have read only (query) permissions. __Note:__ The action must be performed by an authenticated root account.
-      security:
-        - bearerAuth: []
+      description: A user account provides the ability for organisations to organise users with thing groups. Users belonging to thing groups can perform various actions - by default the user will have read only (query) permissions. __Note:__ The root account holder must first confirm the registration before the activation token will be sent to the user supplied e-mail address
       requestBody:
         description: Additional information required for user account registration. By registering, the user accept the terms and conditions as described at [https://www.oculusd.com/](https://www.oculusd.com/)
         required: true
@@ -264,6 +262,61 @@ paths:
           $ref: '#/components/responses/GenericErrorResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
+
+  /account/root-account/{rootAccountId}/accept-user-registration/{userAccountId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: A new user account ID
+    get:
+      summary: Accept a new user registration
+      description: After a user registers, the root account holder will recaive an email with the request. With this simple GET request, the root account holder can accept the request. After this action is performed, a registration token will be created for the user and send to the user via email
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+
+  /activate/user-account/{userAccountId}/{activationToken}:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Account ID as returned from the registration request
+      - in: path
+        name: activationToken
+        schema:
+          type: "string"
+        required: true
+        description: the token you received in your e-mail
+    post:
+      summary: Activate a PENDING user account
+      description: Because placing password or passsphrase strings in query arameters is a bad idea, supply it rather in the POST body. After a succesful activation, the user should receive another email confirming the activation. __Note:__ The action does not required an authenticated root account as the user can activate their account them selves.
+      requestBody:
+        description: Supply the same passphrase you used during registration.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountActivationSchema'
+      responses:
+          '201':
+            $ref: '#/components/responses/StandardResultResponse'
+          '520':
+            $ref: '#/components/responses/GenericErrorResponse'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
 
 
 components:
@@ -359,6 +412,9 @@ components:
     UserAccountRegistrationSchema:
       type: object
       properties:
+        RootAccountId:
+          type: "string"
+          description: The root account ID this user account must be linked to
         ThingGroups:
           type: "array"
           description: The list of thing group IDs the user will be linked to. 
@@ -368,8 +424,10 @@ components:
           type: "string"
           description: A user defined passphrase, min 20 characters and max 1024 characters in the ASCII range 32 to 126 (decimal)
       required:
+        - RootAccountId
         - PassPhrase
       example:
+        RootAccountId: raxxxxxxxx
         ThingGroups: ["default", "tgxxxxxxxx"]
         PassPhrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
 
@@ -573,14 +631,14 @@ components:
         Data:
           CreateNewRootAccount: true
 
-    RootAccountActivationSchema:
+    AccountActivationSchema:
       type: object
       properties:
         Passphrase:
           type: "string"
           description: Use the passphrase you have registered with to confirm the activation
       example:
-        Passphrase: abc
+        Passphrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
 
     RootAccountAuthenticationSchema:
       type: object

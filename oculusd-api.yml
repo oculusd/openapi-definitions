@@ -15,7 +15,7 @@ servers:
         default: us1
         description: Regional endpoints (data can be stored in USA, North Virginia or The Netherlands)
   - url: http://{host}{port}{path}
-    description: A simple locat test server, for those implementing a local integration simulator. The example deonstrates a typical Python Flask development server
+    description: A simple local test server, for those implementing a local integration simulator. The example deonstrates a typical Python Flask development server
     variables:
       host:
         default: "127.0.0.1"
@@ -137,6 +137,53 @@ paths:
           $ref: '#/components/responses/LogoutResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse' 
+
+  /account/root-account/{rootAccountId}/requestReset:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+    get:
+      summary: Request a passphrase reset
+      description: This request will result in an e-mail being sent to the registered e-mail address for th root account containing a string required for the `reset` request
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+
+  /account/root-account/{rootAccountId}/reset/{resetToken}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+      - in: path
+        name: resetToken
+        schema:
+          type: "string"
+        required: true
+        description: The reset token received via e-mail after a `requestReset` request
+    put:
+      summary: Supply new credentials
+      description: The request body must contain the new passphrase. If the passphrase validation pass, any current root account session will be expired and the account will require the new credentials for the next authentication
+      requestBody:
+        description: Include the new passphrase in the request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountResetPassphraseSchema'
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
 
 
 components:
@@ -363,6 +410,17 @@ components:
       example:
         Passphrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
         TokenTTL: 600
+
+    AccountResetPassphraseSchema:
+      type: object
+      properties:
+        Passphrase:
+          type: "string"
+          description: Use the passphrase you have registered with to confirm the activation
+      required:
+        - Passphrase
+      example:
+        Passphrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
 
   securitySchemes:
     bearerAuth:

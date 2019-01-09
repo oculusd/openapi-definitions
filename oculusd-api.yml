@@ -362,6 +362,31 @@ paths:
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
+  /account/root-account/{rootAccountId}/user-account/{userAccountId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: A user account ID, assuming this user account exists for this root account
+    get:
+      summary: Return details about a user account
+      description: The returned data provides details on the current status of the user account
+      security:
+        - rootAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+        '404':
+            $ref: '#/components/responses/NotFoundResponse'
+
 
 components:
 
@@ -834,6 +859,99 @@ components:
         AccountEmailAddress: user1@example.tld
         AccountId: ucxxxxxxxx
         AccountStatus: ACTIVE
+
+    # THING SCHEMAS
+
+    SensorAxisSchema:
+      type: object
+      properties:
+        AxisName:
+          type: "string"
+          description: The name of an axis
+        UserDefinedType:
+          type: "string"
+          description: Freeform text for a user to define a type they can later use in theur own applications. An example may be "Celsius"
+        DataType:
+          type: "string"
+          enum:
+            - NUMBER
+            - STRING
+            - BOOLEAN
+          description: Define the service supported data type. The default type, if none is specified, is NUMBER
+      required:
+        - AxisName
+      example:
+        AxisName: Temperature Reading Axis
+        UserDefinedType: CELSIUS
+        DataType: NUMBER
+
+    SensorSchema:
+      type: object
+      properties:
+        SensorName:
+          type: "string"
+          description: A user defined name for the specific sensor.
+        SensorDescription:
+          type: "string"
+          description: A user defined description for the specific sensor.
+        SensorAxis:
+          type: "array"
+          items:
+            $ref: '#/components/schemas/SensorAxisSchema'
+      required:
+        - SensorName
+        - SensorAxis
+      example:
+        SensorName: Temperature Probe
+        SensorDescription: DS18B20 Temperature Probe Sensor
+        SensorAxis: [
+          {
+            "AxisName": "Temperature Reading Axis",
+            "UserDefinedType": "CELSIUS",
+            "DataType": "NUMBER"
+          }
+        ]
+
+    ThingSchema:
+      type: object
+      properties:
+        ThingName:
+          type: "string"
+          description: A user defined name for the specific sensor.
+        ThingDescription:
+          type: "string"
+          description: A user defined description for the specific thing.
+        ThingMetaData:
+          type: "object"
+          description: A user defined dictionary of values. This will be persisted as JSON and returned as is on queries.
+        Sensors:
+          type: "array"
+          items:
+            $ref: '#/components/schemas/SensorSchema'
+      required:
+        - ThingName
+        - Sensors
+      example:
+        ThingName: Arduino room temperature monitor thing
+        ThingDescription: A simple environmental temperature monitoring thing for my maker lab
+        ThingMetaData: {
+          "ArduinoModel": "UNO REV 3"
+        }
+        Sensors: [
+          {
+            "SensorName": "Temperature Probe",
+            "SensorDescription": "DS18B20 Temperature Probe Sensor",
+            "SensorAxis": [
+              {
+                "AxisName": "Temperature Reading Axis",
+                "UserDefinedType": "CELSIUS",
+                "DataType": "NUMBER"
+              }
+            ]
+          }
+        ]
+
+  # SECURITY
 
   securitySchemes:
     rootAccountBearerAuth:

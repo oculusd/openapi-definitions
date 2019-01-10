@@ -387,6 +387,78 @@ paths:
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
+  /thinggroup/user-account-context/{userAccountId}/list:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+    get:
+      summary: Get a list of Thing Groups
+      description: Only a maximum of 100 groups can be defined per account and once created they cannot be deleted. This API call will return all groups defined within the scope of the authenticated user.
+      security:
+          - userAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/ThingGroupListResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thinggroup/root-account-context/{rootAccountId}/list:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account ID
+    get:
+      summary: Get a list of Thing Groups
+      description: Only a maximum of 100 groups can be defined per account and once created they cannot be deleted. This API call will return all groups defined.
+      security:
+          - rootAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/ThingGroupListResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thinggroup/root-account-context/{rootAccountId}/update/{thingGroupId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account ID
+      - in: path
+        name: thingGroupId
+        schema:
+          type: "string"
+        required: true
+        description: The thing group to update
+    put:
+      summary: Update a Thing Group
+      description: The root account can update either the name or the description of an existing thing group
+      security:
+          - rootAccountBearerAuth: []
+      requestBody:
+        description: Supply the details of the field that needs to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleFieldUpdateSchema'
+      responses:
+          '201':
+            $ref: '#/components/responses/ThingGroupMaintenanceResponse'
+          '520':
+            $ref: '#/components/responses/GenericErrorResponse'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
+    
 
 components:
 
@@ -457,6 +529,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserListRequestSuccessResponseSchema'
+
+    ThingGroupListResponse:
+      description:  Returning a list of Thing Groups
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ThingGroupListResponseSchema'
+
+    ThingGroupMaintenanceResponse:
+      description:  After a thing group have an updated name and/or description, returning the new definition
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ThingGroupMaintenanceResponseSchema'
   
   schemas:
 
@@ -590,6 +676,44 @@ components:
         - Passphrase
       example:
         Passphrase: This * Is @ An ! Example = Of + A , Very . Strong ? Password
+
+    FieldUpdateSchema:
+      type: object
+      properties:
+        FieldName:
+          type: "string"
+          description: The field name to which the update will be applied
+        NewValue:
+          type: "string"
+          description: The new value, as a string. On the service side there will be an appropriate type conversion done if required.
+      required:
+        - FieldName
+        - NewValue
+      example:
+        FieldName: ThingGroupName
+        NewValue: Hobby Development Things
+
+    MultipleFieldUpdateSchema:
+      type: object
+      properties:
+        UpdatedFields:
+          type: "array"
+          description: A list of fields to update
+          items:
+            $ref: '#/components/schemas/FieldUpdateSchema'
+      required:
+        - UpdatedFields
+      example:
+        UpdatedFields: [
+          {
+            "FieldName": "ThingGroupName",
+            "NewValue": "Hobby Development Things"
+          },
+          {
+            "FieldName": "ThingGroupDescription",
+            "NewValue": "All the things of my hobbies"
+          }
+        ]
 
     # ########################################
     #
@@ -851,6 +975,117 @@ components:
         - ThingGroupDescription
       example:
         ThingGroupDescription: This group is for our lab things
+
+    ThingGroupSchema:
+      type: object
+      properties:
+        ThingGroupId: 
+          type: "string"
+          description: A service side ID generated when the new group is created
+        ThingGroupName:
+          type: "string"
+          description: The user defined name of the group. The name cannot be "default". Names are case sensitive. Maximum 32 characters.
+        ThingGroupDescription:
+          type: "string"
+          description: Free form text you can use to describe the group - perhaps its purpose. Maximum 255 characters.
+      example:
+        ThingGroupId: tgxxxxxxxx
+        ThingGroupName: Prototype Development Things
+        ThingGroupDescription: Group for all Things in the lab
+
+    ThingGroupListSchema:
+      type: object
+      properties:
+        Things:
+          type: "array"
+          description: A list of thing groups
+          items:
+            $ref: '#/components/schemas/ThingGroupSchema'
+      required:
+        - Things
+      example:
+        Things: [
+          {
+            "ThingGroupId": "tgxxxxxxxx",
+            "ThingGroupName": "Prototype Development Things",
+            "ThingGroupDescription": "Group for all Things in the lab"
+          }
+        ]
+
+    ThingGroupListResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "object"
+          description: Data generated by the response
+          properties:
+            Things:
+              type: "array"
+              items:
+                $ref: '#/components/schemas/ThingGroupSchema'
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: xxxx-xxxx-xxxx-xxxx
+        Message: null
+        Data:
+          Things: [
+            {
+              "ThingGroupId": "tgxxxxxxxx",
+              "ThingGroupName": "Prototype Development Things",
+              "ThingGroupDescription": "Group for all Things in the lab"
+            }
+          ]
+
+    ThingGroupMaintenanceResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+        Data:
+          type: "object"
+          description: Data generated by the response
+          properties:
+            Thing:
+              type: "object"
+              $ref: '#/components/schemas/ThingGroupSchema'
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: xxxx-xxxx-xxxx-xxxx
+        Message: null
+        Data:
+          Thing: {
+            "ThingGroupId": "tgxxxxxxxx",
+            "ThingGroupName": "Prototype Development Things",
+            "ThingGroupDescription": "Group for all Things in the lab"
+          }
 
     NewThingGroupResponseSchema:
       type: object

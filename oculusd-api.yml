@@ -387,7 +387,7 @@ paths:
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
-  /thinggroup/user-account-context/{userAccountId}/list:
+  /thinggroup/user-account-context/{userAccountId}/list-groups:
     parameters:
       - in: path
         name: userAccountId
@@ -406,7 +406,68 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
-  /thinggroup/root-account-context/{rootAccountId}/list:
+  /thinggroup/user-account-context/{userAccountId}/new-thing/{thingGroupId}:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingGroupId
+        schema:
+          type: "string"
+        required: true
+        description: The thing group ID the new thing must be added to
+    post:
+      summary: Register a new thing
+      description: In the user context, users can define new things for the thing group(s) they have write access to.
+      security:
+        - userAccountBearerAuth: []
+      requestBody:
+        description: New thing definition
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewThingRequestSchema'
+      responses:
+        '201':
+          $ref: '#/components/responses/NewThingResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thing/user-account-context/{userAccountId}/delete-thing/{thingId}:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+    delete:
+      summary: Delete a thing
+      description: Delete the specified thing provided the user has write access to the thing group to which the thing belongs. __WARNING:__ All associated data will also be deleted. __WARNING:__ This action cannot be undone. 
+      security:
+        - userAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thinggroup/root-account-context/{rootAccountId}/list-groups:
     parameters:
       - in: path
         name: rootAccountId
@@ -459,6 +520,66 @@ paths:
           '404':
             $ref: '#/components/responses/NotFoundResponse'
     
+  /thinggroup/root-account-context/{rootAccountId}/new-thing/{thingGroupId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account ID
+      - in: path
+        name: thingGroupId
+        schema:
+          type: "string"
+        required: true
+        description: The thing group ID the new thing must be added to
+    post:
+      summary: Register a new thing
+      description: The root account can add a new thing to any defined group
+      security:
+        - rootAccountBearerAuth: []
+      requestBody:
+        description: New thing definition
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewThingRequestSchema'
+      responses:
+        '201':
+          $ref: '#/components/responses/NewThingResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thing/root-account-context/{rootAccountId}/delete-thing/{thingId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your root account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+    delete:
+      summary: Delete a thing
+      description: The root account can delete any thing. __WARNING:__ All associated data will also be deleted. __WARNING:__ This action cannot be undone. 
+      security:
+        - rootAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
 
 components:
 
@@ -543,6 +664,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ThingGroupMaintenanceResponseSchema'
+
+    NewThingResponse:
+      description:  When the new thing have succesfully been created, the response will include the new Thing ID for the new thing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NewThingResponseSchema'
   
   schemas:
 
@@ -1215,9 +1343,6 @@ components:
           type: "object"
           additionalProperties:
             $ref: '#/components/schemas/ThingSchema'
-        ThingGroupId:
-          type: "string"
-          description: The thing group ID to add the thing to. If not supplied, the default will be used. If this is a user account requesting the new thing to be created, the use must have write privileges to the specified group.
       required:
         - Thing
       example:
@@ -1241,9 +1366,8 @@ components:
             }
           ]
         }
-        ThingGroupId: tgxxxxxxxx
 
-    NewThingRequestResponseSchema:
+    NewThingResponseSchema:
       type: object
       properties:
         IsError:

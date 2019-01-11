@@ -746,7 +746,7 @@ paths:
       summary: Get the current thing session token
       description: Retrieve the current valid thing session token, if any. This root context request will also return additional audit infromation about the creation of the token.
       security:
-        - userAccountBearerAuth: []
+        - rootAccountBearerAuth: []
       responses:
         '201':
           $ref: '#/components/responses/ThingTokenAuditResponse'
@@ -782,6 +782,97 @@ paths:
           $ref: '#/components/responses/GenericErrorResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
+
+  /data/query/user-account-context/{userAccountId}/{thingId}/simple:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+      - in: query
+        name: limit
+        schema:
+          type: "integer"
+        required: false
+        description: Limit the number of records per axis to return. The default is 100
+      - in: query
+        name: notBefore
+        schema:
+          type: "integer"
+        required: false
+        description: The UTC Unix timestamp to use as the earliest timestamp from where to retrieve records. The service will consider `ReadingTimestamp` first (if avaiable) and then service side timestamps.
+      - in: query
+        name: notAfter
+        schema:
+          type: "integer"
+        required: false
+        description: The UTC Unix timestamp to use as the latest timestamp up to where records can be retrieved. The service will consider `ReadingTimestamp` first (if avaiable) and then service side timestamps.
+    get:
+      summary: Get captured data
+      description: Retrieve the records for the thing as captured between two time stamps. The default bahaviour without any query parameters provided is to return a maximum of 100 record entries per axis for all sensors for the last hour
+      security:
+        - userAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/DataQuerySimpleResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /data/query/root-account-context/{rootAccountId}/{thingId}/simple:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+      - in: query
+        name: limit
+        schema:
+          type: "integer"
+        required: false
+        description: Limit the number of records per axis to return. The default is 100
+      - in: query
+        name: notBefore
+        schema:
+          type: "integer"
+        required: false
+        description: The UTC Unix timestamp to use as the earliest timestamp from where to retrieve records. The service will consider `ReadingTimestamp` first (if avaiable) and then service side timestamps.
+      - in: query
+        name: notAfter
+        schema:
+          type: "integer"
+        required: false
+        description: The UTC Unix timestamp to use as the latest timestamp up to where records can be retrieved. The service will consider `ReadingTimestamp` first (if avaiable) and then service side timestamps.
+    get:
+      summary: Get captured data
+      description: Retrieve the records for the thing as captured between two time stamps. The default bahaviour without any query parameters provided is to return a maximum of 100 record entries per axis for all sensors for the last hour
+      security:
+        - rootAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/DataQuerySimpleResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      
 
 components:
 
@@ -894,6 +985,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ThingReadingResponseSchema'
+
+    DataQuerySimpleResponse:
+      description: When a thing submits data and no serious errors occur, the reponse will confirm some basic data captured statistics.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataQuerySimpleResponseSchema'
   
   schemas:
 
@@ -1878,6 +1976,58 @@ components:
           TotalRecordQty: 5
           SensorsIgnored: 0
           AxisIgnored: 0
+
+    # ########################################
+    #
+    #          DATA QUERY SCHEMAS
+    #
+    # ########################################
+
+    DataQuerySimpleResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: false
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          nullable: true
+          default: null
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+          nullable: true
+        Data:
+          type: "object"
+          description: Captured data returned as CSV records
+          properties:
+            CsvHeaderLine:
+              type: "string"
+              description: The CSV header line
+            CsvData:
+              type: "array"
+              nullable: true
+              description: CSV line entries
+              items:
+                type: string  
+      example:
+        IsError: false
+        ErrorMessage: null
+        TraceId: xxxx-xxxx-xxxx-xxxx
+        Message: null
+        Data:
+          CsvHeaderLine: "sensor-name,axis-name,reading-timestamp,service-timestamp,data"
+          CsvData: [
+            "\"Sensor 1\",\"Axis 1\",null,1547180762,100",
+            "\"Sensor 1\",\"Axis 2\",null,1547180762,99",
+            "\"Sensor 2\",\"Axis 1\",null,1547180762,80",
+            "\"Sensor 2\",\"Axis 2\",null,1547180762,79",
+          ]
 
   # ########################################
   #

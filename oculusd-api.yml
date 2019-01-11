@@ -500,6 +500,33 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
+  /thing/user-account-context/{userAccountId}/delete-thing-session/{thingId}:
+    parameters:
+      - in: path
+        name: userAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+    delete:
+      summary: Delete a thing session
+      description: Invalidate any active session token for the specified thing. The user must have write permission for the particular thing.
+      security:
+        - userAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
   /thinggroup/root-account-context/{rootAccountId}/list-groups:
     parameters:
       - in: path
@@ -614,10 +641,10 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
-  /thing/root-account-context/{userAccountId}/create-thing-session/{thingId}:
+  /thing/root-account-context/{rootAccountId}/create-thing-session/{thingId}:
     parameters:
       - in: path
-        name: userAccountId
+        name: rootAccountId
         schema:
           type: "string"
         required: true
@@ -642,6 +669,33 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/ThingTokenResponse'
+        '520':
+          $ref: '#/components/responses/GenericErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /thing/root-account-context/{rootAccountId}/delete-thing-session/{thingId}:
+    parameters:
+      - in: path
+        name: rootAccountId
+        schema:
+          type: "string"
+        required: true
+        description: Your user account ID
+      - in: path
+        name: thingId
+        schema:
+          type: "string"
+        required: true
+        description: The thing ID of the thing that must be deleted
+    delete:
+      summary: Delete a thing session
+      description: Invalidate any active session token for the specified thing. The root account can invalidate any thing session.
+      security:
+        - rootAccountBearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/StandardResultResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
         '404':

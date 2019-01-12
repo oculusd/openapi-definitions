@@ -224,6 +224,10 @@ paths:
           $ref: '#/components/responses/NewThingGroupResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -285,6 +289,10 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/StandardResultResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
 
   /activate/user-account/{userAccountId}/{activationToken}:
     parameters:
@@ -334,6 +342,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/UserListRequestSuccessResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
@@ -359,6 +369,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/UserListRequestSuccessResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
@@ -384,6 +396,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/StandardResultResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
             $ref: '#/components/responses/NotFoundResponse'
 
@@ -403,6 +417,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/ThingGroupListResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -437,6 +453,10 @@ paths:
           $ref: '#/components/responses/NewThingResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -464,6 +484,8 @@ paths:
           $ref: '#/components/responses/StandardResultResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -497,6 +519,8 @@ paths:
           $ref: '#/components/responses/ThingTokenResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -524,6 +548,8 @@ paths:
           $ref: '#/components/responses/ThingTokenResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -551,6 +577,8 @@ paths:
           $ref: '#/components/responses/StandardResultResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -570,6 +598,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/ThingGroupListResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -604,6 +634,8 @@ paths:
             $ref: '#/components/responses/ThingGroupMaintenanceResponse'
           '520':
             $ref: '#/components/responses/GenericErrorResponse'
+          '403':
+            $ref: '#/components/responses/ForbiddenResponse'
           '404':
             $ref: '#/components/responses/NotFoundResponse'
     
@@ -638,6 +670,10 @@ paths:
           $ref: '#/components/responses/NewThingResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -665,6 +701,8 @@ paths:
           $ref: '#/components/responses/StandardResultResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -698,6 +736,8 @@ paths:
           $ref: '#/components/responses/ThingTokenResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -725,6 +765,8 @@ paths:
           $ref: '#/components/responses/StandardResultResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -752,6 +794,8 @@ paths:
           $ref: '#/components/responses/ThingTokenAuditResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -780,6 +824,10 @@ paths:
           $ref: '#/components/responses/ThingReadingResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -825,6 +873,10 @@ paths:
           $ref: '#/components/responses/DataQuerySimpleResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
 
@@ -870,6 +922,10 @@ paths:
           $ref: '#/components/responses/DataQuerySimpleResponse'
         '520':
           $ref: '#/components/responses/GenericErrorResponse'
+        '402':
+          $ref: '#/components/responses/InsufficientFundsResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           $ref: '#/components/responses/NotFoundResponse'
       
@@ -992,6 +1048,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/DataQuerySimpleResponseSchema'
+
+    ForbiddenResponse:
+      description: Response generated when the requesting client does not have a valid token or sufficient permissions to access the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenResponseSchema'
+
+    InsufficientFundsResponse:
+      description: When logging data or performing actions that affect the account balance it may happen that there are no more funds available. In these cases, the following error will be returned. To resolve this error, the root account must be topped-up
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsufficientFundsResponseSchema'
   
   schemas:
 
@@ -1110,6 +1180,66 @@ components:
       example:
         IsError: true
         ErrorMessage: An error message explaining what went wrong
+        TraceId: aaaa-bbbb-cccc-dddd
+        Message: null
+        Data: null
+
+    ForbiddenResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: true
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          nullable: false
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+          nullable: true
+        Data:
+          type: "string"
+          description: Data generated by the response
+          nullable: true
+          default: null
+      example:
+        IsError: true
+        ErrorMessage: You do not have permission to access this resource. This incident was logged with all available meta-data including your source IP address and client identification string.
+        TraceId: aaaa-bbbb-cccc-dddd
+        Message: null
+        Data: null
+
+    InsufficientFundsResponseSchema:
+      type: object
+      properties:
+        IsError:
+          type: "boolean"
+          description: Flag to indicate of an error occured
+          default: true
+        ErrorMessage:
+          type: "string"
+          description: If an error occured, this field will contain the error messaage
+          nullable: false
+        TraceId:
+          type: "string"
+          description: An API generated reference that consumers can quote when requesting support or logging errors
+        Message:
+          type: "string"
+          description: At times other meaningful messages may be passed along with a response. The intended purpose is to provide guidence. Consumers may find it useful, especially in the beginning, to them them understand the flow.
+          nullable: true
+        Data:
+          type: "string"
+          description: Data generated by the response
+          nullable: true
+          default: null
+      example:
+        IsError: true
+        ErrorMessage: You have reached a zero balance on the root account. Please fund the root account to allow future requests to be processed.
         TraceId: aaaa-bbbb-cccc-dddd
         Message: null
         Data: null

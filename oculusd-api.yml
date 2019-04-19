@@ -24,6 +24,7 @@ servers:
 
 paths:
   /ping:
+    x-env-override: OCULUSD_API_PING
     get:
       summary: Returns a general response
       description: This function is intended for checking service availability and response time. This is a public endpoint that does not require any authorisation. 
@@ -36,6 +37,7 @@ paths:
             $ref: '#/components/responses/GenericErrorResponse'
   
   /register/root-account/{emailAddress}:
+    x-env-override: OCULUSD_API_RRA
     parameters:
       - in: path
         name: emailAddress
@@ -62,6 +64,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /activate/root-account/{rootAccountId}/{activationToken}:
+    x-env-override: OCULUSD_API_ARA
     parameters:
       - in: path
         name: rootAccountId
@@ -94,6 +97,7 @@ paths:
             $ref: '#/components/responses/NotFoundResponse'
 
   /account/root-account/{rootAccountId}/authenticate:
+    x-env-override: OCULUSD_API_RAA
     parameters:
       - in: path
         name: rootAccountId
@@ -120,6 +124,7 @@ paths:
             $ref: '#/components/responses/NotFoundResponse'
 
   /account/root-account/{rootAccountId}/logout:
+    x-env-override: OCULUSD_API_RLO
     parameters:
       - in: path
         name: rootAccountId
@@ -143,6 +148,7 @@ paths:
             $ref: '#/components/responses/GenericErrorResponse'
 
   /account/root-account/{rootAccountId}/request-reset:
+    x-env-override: OCULUSD_API_RRR
     parameters:
       - in: path
         name: rootAccountId
@@ -160,6 +166,7 @@ paths:
             $ref: '#/components/responses/GenericErrorResponse'
 
   /account/root-account/{rootAccountId}/reset/{resetToken}:
+    x-env-override: OCULUSD_API_RRT
     parameters:
       - in: path
         name: rootAccountId
@@ -192,6 +199,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /account/root-account/{rootAccountId}/new-thing-group/{thingGroupName}:
+    x-env-override: OCULUSD_API_RANTG
     parameters:
       - in: path
         name: rootAccountId
@@ -230,6 +238,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /accept-new-root-accounts:
+    x-env-override: OCULUSD_API_ANRA
     get:
       summary: Enquiry to see if new root accounts can be registered
       description: In some cases the registration of new root accounts may be disabled. This query will confirm this status.
@@ -242,6 +251,7 @@ paths:
             $ref: '#/components/responses/GenericErrorResponse'
 
   /thinggroup/root-account-context/{rootAccountId}/list-groups:
+    x-env-override: OCULUSD_API_RALTG
     parameters:
       - in: path
         name: rootAccountId
@@ -263,6 +273,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /thinggroup/root-account-context/{rootAccountId}/update/{thingGroupId}:
+    x-env-override: OCULUSD_API_RAUTG
     parameters:
       - in: path
         name: rootAccountId
@@ -299,6 +310,7 @@ paths:
             $ref: '#/components/responses/NotFoundResponse'
     
   /thinggroup/root-account-context/{rootAccountId}/new-thing/{thingGroupId}:
+    x-env-override: OCULUSD_API_RANT
     parameters:
       - in: path
         name: rootAccountId
@@ -337,6 +349,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /thing/root-account-context/{rootAccountId}/create-thing-session/{thingGroupId}/{thingId}:
+    x-env-override: OCULUSD_API_RATS
     parameters:
       - in: path
         name: rootAccountId
@@ -378,6 +391,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /thing/root-account-context/{rootAccountId}/delete-thing-session/{thingId}:
+    x-env-override: OCULUSD_API_RSDTS
     parameters:
       - in: path
         name: rootAccountId
@@ -407,6 +421,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /data/log/{thingId}:
+    x-env-override: OCULUSD_API_LOG1
     parameters:
       - in: path
         name: thingId
@@ -439,6 +454,7 @@ paths:
           $ref: '#/components/responses/NotFoundResponse'
 
   /data/query/root-account-context/{rootAccountId}/{thingGroupId}/{thingId}/simple:
+    x-env-override: OCULUSD_API_QS
     parameters:
       - in: path
         name: rootAccountId

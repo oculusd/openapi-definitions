@@ -25,6 +25,7 @@ servers:
 paths:
   /ping:
     x-env-override: OCULUSD_API_PING
+    x-descriptive-name: Ping
     get:
       summary: Returns a general response
       description: This function is intended for checking service availability and response time. This is a public endpoint that does not require any authorisation. 
@@ -38,6 +39,7 @@ paths:
   
   /register/root-account/{emailAddress}:
     x-env-override: OCULUSD_API_RRA
+    x-descriptive-name: RegisterRootAccount
     parameters:
       - in: path
         name: emailAddress
@@ -65,6 +67,7 @@ paths:
 
   /activate/root-account/{rootAccountId}/{activationToken}:
     x-env-override: OCULUSD_API_ARA
+    x-descriptive-name: ActivateRootAccount
     parameters:
       - in: path
         name: rootAccountId
@@ -98,6 +101,7 @@ paths:
 
   /account/root-account/{rootAccountId}/authenticate:
     x-env-override: OCULUSD_API_RAA
+    x-descriptive-name: AuthenticateRootAccount
     parameters:
       - in: path
         name: rootAccountId
@@ -125,6 +129,7 @@ paths:
 
   /account/root-account/{rootAccountId}/logout:
     x-env-override: OCULUSD_API_RLO
+    x-descriptive-name: LogoutRootAccount
     parameters:
       - in: path
         name: rootAccountId
@@ -149,6 +154,7 @@ paths:
 
   /account/root-account/{rootAccountId}/request-reset:
     x-env-override: OCULUSD_API_RRR
+    x-descriptive-name: RootAccountRequestReset
     parameters:
       - in: path
         name: rootAccountId
@@ -167,6 +173,7 @@ paths:
 
   /account/root-account/{rootAccountId}/reset/{resetToken}:
     x-env-override: OCULUSD_API_RRT
+    x-descriptive-name: RootAccountReset
     parameters:
       - in: path
         name: rootAccountId
@@ -200,6 +207,7 @@ paths:
 
   /account/root-account/{rootAccountId}/new-thing-group/{thingGroupName}:
     x-env-override: OCULUSD_API_RANTG
+    x-descriptive-name: RootAccountNewThingGroup
     parameters:
       - in: path
         name: rootAccountId
@@ -239,6 +247,7 @@ paths:
 
   /accept-new-root-accounts:
     x-env-override: OCULUSD_API_ANRA
+    x-descriptive-name: AcceptNewRootAccounts
     get:
       summary: Enquiry to see if new root accounts can be registered
       description: In some cases the registration of new root accounts may be disabled. This query will confirm this status.
@@ -252,6 +261,7 @@ paths:
 
   /thinggroup/root-account-context/{rootAccountId}/list-groups:
     x-env-override: OCULUSD_API_RALTG
+    x-descriptive-name: RootAccountListThingGroups
     parameters:
       - in: path
         name: rootAccountId
@@ -274,6 +284,7 @@ paths:
 
   /thinggroup/root-account-context/{rootAccountId}/update/{thingGroupId}:
     x-env-override: OCULUSD_API_RAUTG
+    x-descriptive-name: RootAccountUpdateThingGroup
     parameters:
       - in: path
         name: rootAccountId
@@ -311,6 +322,7 @@ paths:
     
   /thinggroup/root-account-context/{rootAccountId}/new-thing/{thingGroupId}:
     x-env-override: OCULUSD_API_RANT
+    x-descriptive-name: RootAccountNewThing
     parameters:
       - in: path
         name: rootAccountId
@@ -350,6 +362,7 @@ paths:
 
   /thing/root-account-context/{rootAccountId}/create-thing-session/{thingGroupId}/{thingId}:
     x-env-override: OCULUSD_API_RATS
+    x-descriptive-name: RootAccountCreateNewThingSession
     parameters:
       - in: path
         name: rootAccountId
@@ -392,6 +405,7 @@ paths:
 
   /thing/root-account-context/{rootAccountId}/delete-thing-session/{thingId}:
     x-env-override: OCULUSD_API_RSDTS
+    x-descriptive-name: RootAccountDeleteThingSession
     parameters:
       - in: path
         name: rootAccountId
@@ -422,6 +436,7 @@ paths:
 
   /data/log/{thingId}:
     x-env-override: OCULUSD_API_LOG1
+    x-descriptive-name: DataLogV1
     parameters:
       - in: path
         name: thingId
@@ -455,6 +470,7 @@ paths:
 
   /data/query/root-account-context/{rootAccountId}/{thingGroupId}/{thingId}/simple:
     x-env-override: OCULUSD_API_QS
+    x-descriptive-name: RootAccountQuerySimple
     parameters:
       - in: path
         name: rootAccountId
